@@ -1,7 +1,11 @@
 <?php
     include("header.php");
 
-    $sql = "SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id";
+    if ($isAdminOrEmployee) {
+        $sql = "SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id";
+    } else {
+        $sql = "SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id WHERE a.an_statut = 1";
+    }
 
     $annonces = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -10,7 +14,7 @@
     <h1>Nos annonces</h1>
 
     <div class="column">
-        <a href="" class="btn btn-success">Publier une annonce</a>
+        <a href="annonce-select.php" class="btn btn-success">Publier une annonce</a>
         <?php if (count($annonces) > 0): ?>
             <?php foreach($annonces as $annonce):?>
                 
@@ -28,9 +32,10 @@
                     <p>Type de bien: <?= htmlentities($annonce['tb_libelle'])?></p>
                     <a href="annonce.php?info=<?= $annonce['an_id']?>" class="btn btn-info">Détails</a>
                     <!--TODO: if isAdminOrEmployee-->
-                    <a href="" class="btn btn-warning">Modifier</a>
-                    <!--TODO: if isAdminOrEmployee-->
-                    <a href="" class="btn btn-danger">Désactiver</a>
+                    <a href="annonce-select.php?modify=<?= $annonce['an_id']?>" class="btn btn-warning">Modifier</a>
+                    <!--TODO: if isAdminOrEmployee && an_statut == 1-->
+                    <a href="annonce.php?delist=<?= $annonce['an_id']?>" class="btn btn-danger">Désactiver</a>
+                    <!--TODO: else if isAdminOrEmployee && an_satut == 0, bouton activer--> 
                 </div>
             <?php endforeach; ?>
         <?php else:?>
