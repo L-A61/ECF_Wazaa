@@ -34,12 +34,12 @@ INSERT INTO `waz_type_utilisateur` (`tu_id`, `tu_libelle`) VALUES
 (1, 'admin'),
 (2, 'employé');
 
-CREATE TABLE waz_type_annonce(
-   ta_id INT AUTO_INCREMENT,
-   ta_libelle VARCHAR(50)  NOT NULL,
-   PRIMARY KEY(ta_id)
+CREATE TABLE waz_type_bien(
+   tb_id INT AUTO_INCREMENT,
+   tb_libelle VARCHAR(50)  NOT NULL,
+   PRIMARY KEY(tb_id)
 );
-INSERT INTO `waz_type_annonce` (`ta_id`, `ta_libelle`) VALUES
+INSERT INTO `waz_type_bien` (`tb_id`, `tb_libelle`) VALUES
 (1, 'maison'),
 (2, 'appartement'),
 (3, 'immeuble'),
@@ -76,15 +76,15 @@ CREATE TABLE waz_annonces(
    an_d_modif DATETIME,
    an_statut BOOLEAN NOT NULL,
    an_vues INT NOT NULL,
-   ta_id INT NOT NULL,
+   tb_id INT NOT NULL,
    u_id INT NOT NULL,
    PRIMARY KEY(an_id),
-   FOREIGN KEY(ta_id) REFERENCES waz_type_annonce(ta_id),
+   FOREIGN KEY(tb_id) REFERENCES waz_type_bien(tb_id),
    FOREIGN KEY(u_id) REFERENCES waz_utilisateur(u_id)
 );
 
 
-INSERT INTO `waz_annonces` (`an_id`, `an_offre`, `an_pieces`, `an_ref`, `an_titre`, `an_description`, `an_local`, `an_surf_hab`, `an_surf_tot`, `an_prix`, `an_diagnostic`, `an_d_ajout`, `an_d_modif`, `an_statut`, `an_vues`, `ta_id`, `u_id`) VALUES
+INSERT INTO `waz_annonces` (`an_id`, `an_offre`, `an_pieces`, `an_ref`, `an_titre`, `an_description`, `an_local`, `an_surf_hab`, `an_surf_tot`, `an_prix`, `an_diagnostic`, `an_d_ajout`, `an_d_modif`, `an_statut`, `an_vues`, `tb_id`, `u_id`) VALUES
 (1, 'A', 5, '20A100', '100 km de Paris, maison 85m2 avec jardin', 'Exclusivité : dans bourg tous commerces avec écoles, maison d\'environ 85m2 habitables, mitoyenne, offrant en rez-de-chaussée, une cuisine aménagée, un salon-séjour, un WC et une loggia et à l\'étage, 3 chambres dont 2 avec placard, salle de bains et WC séparé. 2 garages. Le tout sur une parcelle de 225m2. Chauffage individuel clim réversible, DPE : F. ', 'Somme (80), 1h00 de Paris', 85, 225, 197000, 'F', '2020-11-13', NULL, true, 0, 1, 1);
 
 CREATE TABLE IF NOT EXISTS waz_photos(
