@@ -5,13 +5,20 @@ $id = isset($_GET['info']) ? $_GET['info'] : '';
 $sql = "SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id WHERE an_id = '$id'";
 $annonce = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
+$sqlPhotos = "SELECT * FROM waz_photos WHERE an_id = '$id'";
+$photos = $pdo->query($sqlPhotos)->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <?php if(count($annonce) > 0):?>
 <?php foreach ($annonce as $annonceValue): ?>
-    <h4><?= htmlentities($annonceValue['an_titre']) ?></h3>
+    <?php foreach($photos as $photo):?>
+        <img src="assets/photos/annonce_<?= htmlentities($photo['an_id'])?>/<?= htmlentities($photo['pht_libelle'])?>" alt="">
+    <?php endforeach;?>
+
+    <h4><?= htmlentities($annonceValue['an_titre']) ?></h4>
         <p>Publié le: <?= htmlentities($annonceValue['an_d_ajout']) ?></p>
         <?php if ($annonceValue['an_d_modif']): ?>
-            <p>Dernière modification le: <?= htmlentities($annoncValuee['an_d_modif']) ?></p>
+            <p>Dernière modification le: <?= htmlentities($annonceValue['an_d_modif']) ?></p>
         <?php endif; ?>
         <p>Description: <?= htmlentities($annonceValue['an_description']) ?>
     </h4>
