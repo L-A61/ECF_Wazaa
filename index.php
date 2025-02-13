@@ -13,6 +13,38 @@
         header("Location: contact.php");
         exit();
     }
+
+    if (isset($_GET['unlist'])) {
+        $unlist_id = $_GET['unlist'];
+        $stmt = $pdo->prepare("SELECT an_id FROM waz_annonces WHERE an_id = ?");
+        $stmt->execute([$unlist_id]);
+        $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        if ($annonce) {
+            $stmt = $pdo->prepare("UPDATE waz_annonces SET an_statut = ? WHERE an_id = ?");
+            $stmt->execute([0, $unlist_id]);
+        } else {
+            echo "Erreur";
+        }
+        header('Location: index.php');
+        exit;
+    }
+
+    if (isset($_GET['relist'])) {
+        $relist_id = $_GET['relist'];
+        $stmt = $pdo->prepare("SELECT an_id FROM waz_annonces WHERE an_id = ?");
+        $stmt->execute([$relist_id]);
+        $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        if ($annonce) {
+            $stmt = $pdo->prepare("UPDATE waz_annonces SET an_statut = ? WHERE an_id = ?");
+            $stmt->execute([1, $relist_id]);
+        } else {
+            echo "Erreur";
+        }
+        header('Location: index.php');
+        exit;
+    }
 ?>
 
 <div>
@@ -28,10 +60,10 @@
                     <a href="annonce-select.php?modify=<?= $annonce['an_id']?>" class="btn btn-warning">Modifier</a>
                 <?php endif;?>
                 <?php if ($isAdmin && $annonce['an_statut'] == 1):?>
-                    <a href="annonce.php?unlist=<?= $annonce['an_id']?>" class="btn btn-danger">Désactiver</a>
+                    <a href="index.php?unlist=<?= $annonce['an_id']?>" class="btn btn-danger">Désactiver</a>
                     <!--TODO: else if isAdminOrEmployee && an_satut == 0, bouton activer--> 
                 <?php elseif($isAdmin && $annonce['an_statut'] == 0):?>
-                    <a href="annonce.php?relist=<?= $annonce['an_id']?>" class="btn btn-danger">Activer</a>
+                    <a href="index.php?relist=<?= $annonce['an_id']?>" class="btn btn-danger">Activer</a>
                 <?php endif;?>
                 
                 <div class="card">
@@ -60,11 +92,3 @@
 <?php
     include("footer.php");
 ?>
-
-<!-- <p>Nombre de pièces: <?= htmlentities($annonce['an_pieces'])?></p>
-                    <p>Référence: <?= htmlentities($annonce['an_ref'])?></p>
-                    <p>Surface habitable: <?= htmlentities($annonce['an_surf_hab'])?>m²</p>
-                    <p>Surface totale: <?= htmlentities($annonce['an_surf_tot'])?>m²</p>
-                    <p>Type d'offre: <?= htmlentities($annonce['an_offre'])?></p>
-                    <p>Vue: <?= htmlentities($annonce['an_vues'])?></p>
-                    <p>Diagnostic: <?= htmlentities($annonce['an_diagnostic'])?></p> -->
