@@ -31,6 +31,7 @@ $photos = $pdo->query($sqlPhotos)->fetchAll(PDO::FETCH_ASSOC);
     <p>Diagnostic: <?= htmlentities($annonceValue['an_diagnostic']) ?></p>
     <p>Vue: <?= htmlentities($annonceValue['an_vues']) ?></p>
     <a href="index.php" class="btn btn-info">Retour</a>
+    <a href="contact.php" class="btn btn-success">Contacter</a>
 <?php endforeach; ?>
 <?php else:?>
     <p>Annonce introuvable</p>

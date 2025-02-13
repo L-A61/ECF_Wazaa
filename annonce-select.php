@@ -1,6 +1,11 @@
 <?php
 include("header.php");
 
+if (!$isAdminOrEmployee) {
+    header("Location: index.php");
+    exit;
+}
+
 $id = isset($_GET['modify']) ? $_GET['modify'] : '';
 $id_annonce = null;
 

@@ -8,6 +8,11 @@
     }
 
     $annonces = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    if (isset($_SESSION['utilisateur_ID'])) {
+        header("Location: contact.php");
+        exit();
+    }
 ?>
 
 <div>
@@ -15,8 +20,18 @@
 
     <div class="column">
         <a href="annonce-select.php" class="btn btn-success">Publier une annonce</a>
+        
         <?php if (count($annonces) > 0): ?>
             <?php foreach($annonces as $annonce):?>
+                <?php if ($isAdminOrEmployee):?>
+                    <a href="annonce-select.php?modify=<?= $annonce['an_id']?>" class="btn btn-warning">Modifier</a>
+                <?php endif;?>
+                <?php if ($isAdmin && $annonce['an_statut'] == 1):?>
+                    <a href="annonce.php?unlist=<?= $annonce['an_id']?>" class="btn btn-danger">Désactiver</a>
+                    <!--TODO: else if isAdminOrEmployee && an_satut == 0, bouton activer--> 
+                <?php elseif($isAdmin && $annonce['an_statut'] == 0):?>
+                    <a href="annonce.php?relist=<?= $annonce['an_id']?>" class="btn btn-danger">Désactiver</a>
+                <?php endif;?>
                 
                 <div class="card">
                     <div>
@@ -30,13 +45,9 @@
                     <p>Description: <?= htmlentities($annonce['an_description'])?></h4>
                     <p>Prix: <?= htmlentities($annonce['an_prix'])?>€</p>
                     <p>Type de bien: <?= htmlentities($annonce['tb_libelle'])?></p>
-                    <a href="annonce.php?info=<?= $annonce['an_id']?>" class="btn btn-info">Détails</a>
-                    <!--TODO: if isAdminOrEmployee-->
-                    <a href="annonce-select.php?modify=<?= $annonce['an_id']?>" class="btn btn-warning">Modifier</a>
-                    <!--TODO: if isAdminOrEmployee && an_statut == 1-->
-                    <a href="annonce.php?delist=<?= $annonce['an_id']?>" class="btn btn-danger">Désactiver</a>
-                    <!--TODO: else if isAdminOrEmployee && an_satut == 0, bouton activer--> 
+                    
                 </div>
+                <a href="annonce.php?info=<?= $annonce['an_id']?>" class="btn btn-info">Détails</a>
             <?php endforeach; ?>
         <?php else:?>
             <div>Aucune annonce disponible</div>

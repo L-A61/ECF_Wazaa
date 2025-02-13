@@ -42,20 +42,40 @@
 
     // Vérifiez si l'utilisateur est connecté
     $username = null;
-    if (isset($_SESSION['u_ID'])) {
-        $userId = $_SESSION['u_ID'];
+    if (isset($_SESSION['u_id'])) {
+        $user_id = $_SESSION['u_id'];
 
         // Récupération des informations de l'utilisateur
-        $sqlUser = "SELECT * FROM waz_utilisateur WHERE u_ID=:u_ID";
-        $stmtUser = $pdo->prepare($sqlUser);
-        $stmtUser->execute(['u_ID' => $userId]);
-        $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+        $sql = "SELECT * FROM waz_utilisateur WHERE u_ID=:u_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['u_id' => $user_id]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {
-            $username = $user['u_ID'];
+            $username = $user['u_id'];
         }
     }
 
-    // Deux variables pour définir deux cas: si admin ou employé, et si admin
+    // Deux Variables pour définir si admin ou employé, et si admin
     $isAdminOrEmployee = isset($_SESSION['tu_libelle']) && in_array($_SESSION['tu_libelle'], ['admin', 'employé']);
     $isAdmin = isset($_SESSION['tu_libelle']) && in_array($_SESSION['tu_libelle'], ['admin']);
+
+    ?>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <?php if($username):?>
+        <a class="nav-link" href="deconnexion.php">Déconnexion</a>
+        <?php else:?>
+        <a class="nav-link">Connexion</a>
+        <?php endif;?>
+
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">A propos</a>
+      </li>
+    </ul>
+  </div>
+</nav>
