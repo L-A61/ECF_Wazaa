@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS afpa_wazaa_immo;
+
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
@@ -223,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `waz_utilisateur` (
 --
 
 INSERT INTO `waz_utilisateur` (`u_id`, `u_email`, `u_password`, `tu_id`) VALUES
-(1, 'placeholder@test.com', '$2y$10$SEQSBGYb9kANUEHESZRtBu3oUfObmnhmpxvWa4VK1jyEvzdlGvoei', 1);
+(1, 'testAdmin@test.com', '$2y$10$SEQSBGYb9kANUEHESZRtBu3oUfObmnhmpxvWa4VK1jyEvzdlGvoei', 1);
 
 --
 -- Contraintes pour les tables déchargées

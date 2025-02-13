@@ -18,9 +18,10 @@
 <div>
     <h1>Nos annonces</h1>
 
-    <div class="column">
-        <a href="annonce-select.php" class="btn btn-success">Publier une annonce</a>
-        
+    <div class="column w-50 p-3">
+        <?php if($isAdminOrEmployee):?>
+            <a href="annonce-select.php" class="btn btn-success">Publier une annonce</a>
+        <?php endif;?>
         <?php if (count($annonces) > 0): ?>
             <?php foreach($annonces as $annonce):?>
                 <?php if ($isAdminOrEmployee):?>
@@ -35,7 +36,7 @@
                 
                 <div class="card">
                     <div>
-                        <img src="assets/photos/annonce_<?= htmlentities($annonce['an_id'])?>/<?= htmlentities($annonce['an_id'])?>-1.jpg" alt="">
+                        <img src="assets/photos/annonce_<?= htmlentities($annonce['an_id'])?>/<?= htmlentities($annonce['an_id'])?>-1.jpg" alt="" class="img-thumbnail">
                     </div>
                     <h4><?= htmlentities($annonce['an_titre'])?></h3>
                     <p>Publié le: <?= htmlentities($annonce['an_d_ajout'])?></p>
@@ -45,9 +46,9 @@
                     <p>Description: <?= htmlentities($annonce['an_description'])?></h4>
                     <p>Prix: <?= htmlentities($annonce['an_prix'])?>€</p>
                     <p>Type de bien: <?= htmlentities($annonce['tb_libelle'])?></p>
-                    
+                    <a href="annonce.php?info=<?= $annonce['an_id']?>" class="btn btn-info">Détails</a>
                 </div>
-                <a href="annonce.php?info=<?= $annonce['an_id']?>" class="btn btn-info">Détails</a>
+                
             <?php endforeach; ?>
         <?php else:?>
             <div>Aucune annonce disponible</div>

@@ -62,11 +62,13 @@
 
     ?>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div>
-        <a href="index.php"><img src="assets/wazaa_logo.png" alt=""></a>
-    </div>
-  <div class="collapse navbar-collapse" id="navbarNav">
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+  <a href="index.php"><img src="assets/wazaa_logo.png" alt=""></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item">
         <?php if($username):?>
@@ -77,8 +79,9 @@
 
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">À propos</a>
+        <a class="nav-link" href="wazaa.php">À propos</a>
       </li>
     </ul>
+  </div>
   </div>
 </nav>

@@ -17,7 +17,7 @@ $typeOffre = $pdo->query("SELECT * FROM waz_type_offre")->fetchAll(PDO::FETCH_AS
 <?php if(count($annonce) > 0):?>
 <?php foreach ($annonce as $annonceValue): ?>
     <?php foreach($photos as $photo):?>
-        <img src="assets/photos/annonce_<?= htmlentities($photo['an_id'])?>/<?= htmlentities($photo['pht_libelle'])?>" alt="">
+        <img src="assets/photos/annonce_<?= htmlentities($photo['an_id'])?>/<?= htmlentities($photo['pht_libelle'])?>" alt="" class="row w-50 p-3">
     <?php endforeach;?>
 
     <h4><?= htmlentities($annonceValue['an_titre']) ?></h4>
