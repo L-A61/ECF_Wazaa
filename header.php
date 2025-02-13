@@ -69,7 +69,7 @@
         <?php if($username):?>
         <a class="nav-link" href="deconnexion.php">Déconnexion</a>
         <?php else:?>
-        <a class="nav-link">Connexion</a>
+        <a class="nav-link" href="connexion.php">Connexion</a>
         <?php endif;?>
 
       </li>
