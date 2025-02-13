@@ -2,11 +2,16 @@
 include("header.php");
 
 $id = isset($_GET['info']) ? $_GET['info'] : '';
-$sql = "SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id WHERE an_id = '$id'";
+$sql = "SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id 
+JOIN waz_type_offre o ON a.to_id = o.to_id
+WHERE an_id = '$id'";
 $annonce = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
 $sqlPhotos = "SELECT * FROM waz_photos WHERE an_id = '$id'";
 $photos = $pdo->query($sqlPhotos)->fetchAll(PDO::FETCH_ASSOC);
+
+$typeOffre = [];
+$typeOffre = $pdo->query("SELECT * FROM waz_type_offre")->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 <?php if(count($annonce) > 0):?>
@@ -27,7 +32,7 @@ $photos = $pdo->query($sqlPhotos)->fetchAll(PDO::FETCH_ASSOC);
     <p>Référence: <?= htmlentities($annonceValue['an_ref']) ?></p>
     <p>Surface habitable: <?= htmlentities($annonceValue['an_surf_hab']) ?>m²</p>
     <p>Surface totale: <?= htmlentities($annonceValue['an_surf_tot']) ?>m²</p>
-    <p>Type d'offre: <?= htmlentities($annonceValue['an_offre']) ?></p>
+    <p>Type d'offre: <?= htmlentities($annonceValue['to_libelle']) ?></p>
     <p>Diagnostic: <?= htmlentities($annonceValue['an_diagnostic']) ?></p>
     <p>Vue: <?= htmlentities($annonceValue['an_vues']) ?></p>
     <a href="index.php" class="btn btn-info">Retour</a>

@@ -30,7 +30,7 @@
                     <a href="annonce.php?unlist=<?= $annonce['an_id']?>" class="btn btn-danger">Désactiver</a>
                     <!--TODO: else if isAdminOrEmployee && an_satut == 0, bouton activer--> 
                 <?php elseif($isAdmin && $annonce['an_statut'] == 0):?>
-                    <a href="annonce.php?relist=<?= $annonce['an_id']?>" class="btn btn-danger">Désactiver</a>
+                    <a href="annonce.php?relist=<?= $annonce['an_id']?>" class="btn btn-danger">Activer</a>
                 <?php endif;?>
                 
                 <div class="card">

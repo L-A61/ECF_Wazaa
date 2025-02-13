@@ -6,31 +6,40 @@ if (!$isAdminOrEmployee) {
     exit;
 }
 
+$utilisateur = $_SESSION['u_id'];
+
 $id = isset($_GET['modify']) ? $_GET['modify'] : '';
 $id_annonce = null;
 
 $options = [];
-$options = $pdo->query("SELECT * from waz_options")->fetchAll();
+$options = $pdo->query("SELECT * FROM waz_options")->fetchAll();
+
+$typeBien = [];
+$typeBien = $pdo->query("SELECT * FROM waz_type_bien")->fetchAll();
+
+$typeOffre = [];
+$typeOffre = $pdo->query("SELECT * FROM waz_type_offre")->fetchAll();
 
 // $optionsAn = [];
 // $optionsAn = $pdo->query("SELECT * FROM waz_opt_annonces")->fetchAll();
 
 if ($id !== '') {
-    $sql = "SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id WHERE an_id = '$id'";
+    $sql = "SELECT * FROM waz_annonces a WHERE an_id = '$id'";
     $result = $pdo->query($sql);
     $annonce = $result->fetch(PDO::FETCH_ASSOC);
 
     if ($annonce) {
-        $offre = $annonce['an_offre'];
-        $pieces = $annonce['an_pieces'];
         $titre = $annonce['an_titre'];
-        $ref = $annonce['an_ref'];
+        $pieces = $annonce['an_pieces'];
         $description = $annonce['an_description'];
+        $prix = $annonce['an_prix'];
+        $ref = $annonce['an_ref'];
         $local = $annonce['an_local'];
         $surf_hab = $annonce['an_surf_hab'];
         $surf_tot = $annonce['an_surf_tot'];
-        $prix = $annonce['an_prix'];
         $diagnostic = $annonce['an_diagnostic'];
+        $type = $annonce['tb_id'];
+        $offre = $annonce['to_id'];
         
         $id_annonce = $annonce['an_id'];
         $date_modification = $annonce['an_d_modif'];
@@ -45,6 +54,7 @@ if ($id !== '') {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $titre = $_POST['titre'];
+    $pieces = $_POST['pieces'];
     $description = $_POST['description'];
     $prix = $_POST['prix'];
     $ref = $_POST['ref'];
@@ -52,13 +62,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $surf_hab = $_POST['surfhab'];
     $surf_tot = $_POST['surftot'];
     $diagnostic = $_POST['diagnostic'];
+    $type = $_POST['typeBien'];
+    $offre = $_POST['offre'];
 
     if($id_annonce !== null) {
-        $stmt = $pdo->prepare("UPDATE waz_annonces SET an_titre = ?, an_description = ?, an_prix = ?, an_ref = ?, an_local = ?, an_surf_hab = ?, an_surf_tot = ?, an_diagnostic = ? WHERE an_id = ?");
-        $stmt->execute([$titre, $description, $prix, $ref, $local, $surf_hab, $surf_tot, $diagnostic, $annonce['an_id']]);
+        $stmt = $pdo->prepare("UPDATE waz_annonces SET an_titre = ?, an_pieces = ?, an_description = ?, an_prix = ?, an_ref = ?, an_local = ?, an_surf_hab = ?, an_surf_tot = ?, an_diagnostic = ?, tb_id = ?, to_id = ? WHERE an_id = ?");
+        $stmt->execute([$titre, $pieces, $description, $prix, $ref, $local, $surf_hab, $surf_tot, $diagnostic, $type, $offre, $annonce['an_id']]);
     } else {
-        $stmt = $pdo->prepare("INSERT INTO waz_annonces (an_titre, an_description, an_prix, an_ref, an_local, an_surf_hab, an_surf_tot, an_diagnostic, an_d_ajout) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->execute([$titre, $description, $prix, $ref, $local, $surf_hab, $surf_tot, $diagnostic]);
+        $stmt = $pdo->prepare("INSERT INTO waz_annonces (an_titre, an_pieces, an_description, an_prix, an_ref, an_local, an_surf_hab, an_surf_tot, an_diagnostic, an_d_ajout, an_statut, tb_id, u_id, to_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1, ?, ?, ?)");
+        $stmt->execute([$titre, $pieces, $description, $prix, $ref, $local, $surf_hab, $surf_tot, $diagnostic, $type, $utilisateur, $offre]);
     }
 
     // if($id_options_annonces !== null) {
@@ -83,6 +95,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div>
                 <label for="titre">Titre de l'annonce: </label>
                 <input type="text" name="titre" id="titre" value="<?= $id ? htmlentities($titre) : "" ?>">
+            </div>
+
+            <div>
+                <label for="offre">Type d'offre: </label>
+                <?php foreach($typeOffre as $type):?>
+                    <input type="radio" name="offre" value="<?= htmlentities($type['to_id'])?>" <?= (isset($annonce['to_id']) && $annonce['to_id'] == $type['to_id']) ? 'checked' : '' ?>>
+                    <?= htmlentities($type['to_libelle'])?>
+                <?php endforeach;?>
+            </div>
+
+            <div>
+                <label for="pieces">Nombre de pièces: </label>
+                <input type="text" name="pieces" id="pieces" value="<?= $id ? htmlentities($pieces) : "" ?>">
             </div>
 
             <div>
@@ -120,8 +145,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
 
             <div>
-                
+                <label for="typeBien">Type de bien</label>
+                <select name="typeBien" id="typeBien">
+                <?php foreach($typeBien as $type):?>
+                    <option value="<?= $type['tb_id'] ?>" <?= (isset($annonce['tb_id']) && $annonce['tb_id'] == $type['tb_id']) ? 'selected' : '' ?>>
+                    <?= htmlentities($type['tb_libelle']) ?>
+                </option>
+                <?php endforeach ?>
+                </select>
             </div>
+
+            <div>
                 <label for="options">Options: </label>
                 <?php foreach($options as $option):?>
                     <div>
@@ -130,7 +164,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </input>
                     </div>
                 <?php endforeach;?>
-            </select>
+            </div>
+                
         </div>
         <button type="submit" class="btn btn-warning"><?= $id ? "Mettre à jour" : "Créer"?></button>
         <a href="index.php" class="btn btn-info">Retour</a>
@@ -138,13 +173,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <?php
-    if (empty($date_modification)) {
-        $stmt = $pdo->prepare("UPDATE waz_annonces SET an_d_modif = NOW() WHERE an_id = ?");
-        $stmt->execute([$annonce['an_id']]);
-    } else {
+    if ($id_annonce !== null) {
         $stmt = $pdo->prepare("UPDATE waz_annonces SET an_d_modif = NOW() WHERE an_id = ?");
         $stmt->execute([$annonce['an_id']]);
     }
+    
     // TODO : ajouter une date modification via NOW() si première modification, update la date si deuxième ou +, date ajout si nouveau.
     // 
     // $pdo->exec($sqlModif);
