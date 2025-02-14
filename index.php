@@ -8,6 +8,10 @@
     }
     $annonces = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
+    $stmtPhotos = $pdo->prepare("SELECT * FROM waz_photos");
+    $stmtPhotos->execute();
+    $photos = $stmtPhotos->fetchAll(PDO::FETCH_ASSOC);
+
     // Si l'URL contient "unlist", on prépare une requête SQL de l'ID
     if (isset($_GET['unlist'])) {
         $unlist_id = $_GET['unlist'];
@@ -53,25 +57,10 @@
 
         <!-- Si l'utilisateur est admin ou employé, le bouton pour publier une annonce s'affiche -->
         <?php if($isAdminOrEmployee):?>
-            <a href="annonce-select.php" class="btn btn-success">Publier une annonce</a>
+            <a href="annonce-select.php" class="btn btn-success">Publier une annonce</a><br>
         <?php endif;?>
         <?php if (count($annonces) > 0): ?>
             <?php foreach($annonces as $annonce):?>
-
-                <!-- Si l'utilisateur est admin ou employé, le bouton pour modifier une annonce s'affiche -->
-                <?php if ($isAdminOrEmployee):?>
-                    <a href="annonce-select.php?modify=<?= $annonce['an_id']?>" class="btn btn-warning">Modifier</a>
-                <?php endif;?>
-                
-                <!-- Si l'utilisateur est admin le bouton pour désactiver ou activer une annonce s'affiche selon si l'annonce est activé ou désactivé -->
-                <?php if ($isAdmin && $annonce['an_statut'] == 1):?>
-                    <a href="index.php?unlist=<?= $annonce['an_id']?>" class="btn btn-danger">Désactiver</a>
-                    <!--TODO: else if isAdminOrEmployee && an_satut == 0, bouton activer--> 
-                <?php elseif($isAdmin && $annonce['an_statut'] == 0):?>
-                    <a href="index.php?relist=<?= $annonce['an_id']?>" class="btn btn-danger">Activer</a>
-                <?php endif;?>
-                
-                
                 <div class="card">
                     <!-- Affiche la première image contenu dans le dossier appartenant à l'annonce -->
                     <div>
@@ -89,7 +78,18 @@
                     <p>Type de bien: <?= htmlentities($annonce['tb_libelle'])?></p>
                     <a href="annonce.php?info=<?= $annonce['an_id']?>" class="btn btn-info">Détails</a>
                 </div>
+                <!-- Si l'utilisateur est admin ou employé, le bouton pour modifier une annonce s'affiche -->
+                <?php if ($isAdminOrEmployee):?>
+                    <a href="annonce-select.php?modify=<?= $annonce['an_id']?>" class="btn btn-warning">Modifier</a>
+                <?php endif;?>
                 
+                <!-- Si l'utilisateur est admin le bouton pour désactiver ou activer une annonce s'affiche selon si l'annonce est activé ou désactivé -->
+                <?php if ($isAdmin && $annonce['an_statut'] == 1):?>
+                    <a href="index.php?unlist=<?= $annonce['an_id']?>" class="btn btn-danger">Désactiver</a>
+                    <!--TODO: else if isAdminOrEmployee && an_satut == 0, bouton activer--> 
+                <?php elseif($isAdmin && $annonce['an_statut'] == 0):?>
+                    <a href="index.php?relist=<?= $annonce['an_id']?>" class="btn btn-danger">Activer</a>
+                <?php endif;?>
             <?php endforeach; ?>
         <?php else:?>
             <div>Aucune annonce disponible</div>

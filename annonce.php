@@ -1,6 +1,7 @@
 <?php
 include("header.php");
 
+// Récupération dans l'url de l'id de l'annonce
 $id = isset($_GET['info']) ? $_GET['info'] : '';
 $stmt = $pdo->prepare("SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id 
 JOIN waz_type_offre o ON a.to_id = o.to_id
@@ -8,14 +9,20 @@ WHERE an_id = ?");
 $stmt->execute([$id]);
 $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Requête prépare pour les photos
 $stmtPhotos = $pdo->prepare("SELECT * FROM waz_photos WHERE an_id = ?");
 $stmtPhotos->execute([$id]);
 $photos = $stmtPhotos->fetchAll(PDO::FETCH_ASSOC);
 
-$typeOffre = [];
+// Requête préparé pour les types d'offres
 $stmtOffre = $pdo->prepare("SELECT * FROM waz_type_offre");
 $stmtOffre->execute();
 $typeOffre = $stmtOffre->fetchAll(PDO::FETCH_ASSOC);
+
+// Requête préparé pour les options dans les annonces
+$stmtOptionsAn = $pdo->prepare("SELECT * FROM waz_opt_annonces");
+$stmtOptionsAn->execute();
+$optionsAn = $stmtOptionsAn->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 <?php if(count($annonce) > 0):?>
@@ -47,7 +54,8 @@ $typeOffre = $stmtOffre->fetchAll(PDO::FETCH_ASSOC);
 <?php endif;?>
 
 <?php
-    $sqlVue = "UPDATE waz_annonces SET an_vues = an_vues+1 WHERE an_id = '$id'";
-    $pdo->exec($sqlVue);
+    // Incrémente la valeur de la colonne an_vue de l'annonce associée à l'id pour chaqe visite
+    $stmtVue = $pdo->prepare("UPDATE waz_annonces SET an_vues = an_vues+1 WHERE an_id = ?");
+    $stmtVue->execute([$id]);
     include("footer.php");
 ?>

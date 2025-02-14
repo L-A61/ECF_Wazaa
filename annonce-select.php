@@ -1,6 +1,7 @@
 <?php
 include("header.php");
 
+// Si l'utilisateur n'est pas un admin ou un employé, redirection vers la page index.php
 if (!$isAdminOrEmployee) {
     header("Location: index.php");
     exit;
@@ -8,6 +9,7 @@ if (!$isAdminOrEmployee) {
 
 $utilisateur = $_SESSION['u_id'];
 
+// Récupération de modify dans l'URL
 $id = isset($_GET['modify']) ? $_GET['modify'] : '';
 $id_annonce = null;
 
@@ -27,15 +29,17 @@ $stmtOffre->execute();
 $typeOffre = $stmtOffre->fetchAll(PDO::FETCH_ASSOC);
 
 // Requête préparé poures les options dans les annonces
-// $stmtOptionsAn = $pdo->prepare("SELECT * FROM waz_opt_annonces");
-// $stmtOptionsAn->execute();
-// $optionsAn = $stmtOptionsAn->fetchAll(PDO::FETCH_ASSOC);
+$stmtOptionsAn = $pdo->prepare("SELECT * FROM waz_opt_annonces");
+$stmtOptionsAn->execute();
+$optionsAn = $stmtOptionsAn->fetchAll(PDO::FETCH_ASSOC);
 
-if ($id !== '') {
-    $stmt = $pdo->prepare("SELECT * FROM waz_annonces WHERE an_id = ?");
+// Si l'id existe, on prépare une reqûete SQL qui retrouve les informations de l'annonce à partir de son id
+if ($id) {
+    $stmt = $pdo->prepare("SELECT * FROM waz_annonces a WHERE an_id = ?");
     $stmt->execute([$id]);
     $annonce = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Si l'annonce existe, on insert les données dans des variables
     if ($annonce) {
         $titre = $annonce['an_titre'];
         $pieces = $annonce['an_pieces'];
@@ -52,14 +56,20 @@ if ($id !== '') {
         $id_annonce = $annonce['an_id'];
         $date_modification = $annonce['an_d_modif'];
         $id_utilisateur = $annonce['u_id'];
+        
+        if ($optionsAn) {
+            $id_options_annonces = $optionsAn['an_id'];
+        }
+        
 
-        // $id_options_annonces = $optionsAn['an_id'];
+    // Sinon, on informe que l'annonce est introuvable
     } else {
         echo "Annonce introuvable.";
         exit;
     }
 }
 
+// Récupération de la method post, informations insérer dans des variables
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $titre = $_POST['titre'];
     $pieces = $_POST['pieces'];
@@ -73,20 +83,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $type = $_POST['typeBien'];
     $offre = $_POST['offre'];
 
+    // Mettre à jour avec ceci actif cause tout les options d'être sélectionnés et inscrit dans la bdd
+    // $options = $_POST['options'];
+
+    // Si l'annonce n'existe pas on traite le formulaire comme une publication d'annonce via requête SQL préparée
     if ($id_annonce !== null) {
         $stmt = $pdo->prepare("UPDATE waz_annonces SET an_titre = ?, an_pieces = ?, an_description = ?, an_prix = ?, an_ref = ?, an_local = ?, an_surf_hab = ?, an_surf_tot = ?, an_diagnostic = ?, tb_id = ?, to_id = ? WHERE an_id = ?");
         $stmt->execute([$titre, $pieces, $description, $prix, $ref, $local, $surf_hab, $surf_tot, $diagnostic, $type, $offre, $annonce['an_id']]);
+    // Si l'annonce existe, on traite le formulaire comme une modification d'annonce via requête SQL préparée
     } else {
         $stmt = $pdo->prepare("INSERT INTO waz_annonces (an_titre, an_pieces, an_description, an_prix, an_ref, an_local, an_surf_hab, an_surf_tot, an_diagnostic, an_d_ajout, an_statut, tb_id, u_id, to_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1, ?, ?, ?)");
         $stmt->execute([$titre, $pieces, $description, $prix, $ref, $local, $surf_hab, $surf_tot, $diagnostic, $type, $utilisateur, $offre]);
     }
 
-    // if($id_options_annonces !== null) {
-    //     $stmt = $pdo->prepare("UPDATE waz_opt_annonces SET opt_id = ? WHERE an_id = ?");
-    //     $stmt->execute([$options, $optionsAn['an_id']]);
+    // Si les options d'annonces sont déjà insérées, on met à jour les ids d'options selon l'id de l'annonce
+    // if($id_options_annonces) {
+    //      $stmt = $pdo->prepare("UPDATE waz_opt_annonces SET opt_id = ? WHERE an_id = ?");
+    //      $stmt->execute([$options, $annonce['an_id']]);
+    // Si les options d'annonces ne sont pas déjà insérées, on insère les ids d'options ainsi que l'id de l'annonce associé
     // } else {
-    //     $stmt = $pdo->prepare("INSERT INTO waz_annonces (an_titre, an_description, an_prix, an_ref, an_local, an_surf_hab, an_surf_tot, an_diagnostic, an_d_ajout) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    //     $stmt->execute([$titre, $description, $prix, $ref, $local, $surf_hab, $surf_tot, $diagnostic]);
+    //      $stmt = $pdo->prepare("INSERT INTO waz_opt_annonces (opt_id, an_id) SELECT o.opt_id, a.an_id FROM waz_options o, waz_annonces a");
+    //      $stmt->execute();
     // }
 
     header('Location:index.php');
@@ -95,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 ?>
 
+<!-- Formulaire de Modification / Création selon si l'id existant est présent dans l'URL -->
 <div>
     <h1><?= $id ? "Modification" : "Création" ?> de l'annonce</h1>
 
@@ -105,6 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="text" name="titre" id="titre" value="<?= $id ? htmlentities($titre) : "" ?>">
             </div>
 
+            <!-- Choix radio du type d'offre avec un foreach -->
             <div>
                 <label for="offre">Type d'offre: </label>
                 <?php foreach ($typeOffre as $type): ?>
@@ -112,46 +131,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?= htmlentities($type['to_libelle']) ?>
                 <?php endforeach; ?>
             </div>
-
+            
+            <!-- Nombre de pièces -->
             <div>
                 <label for="pieces">Nombre de pièces: </label>
                 <input type="text" name="pieces" id="pieces" value="<?= $id ? htmlentities($pieces) : "" ?>">
             </div>
-
+            
+            <!-- Description de l'annonce -->
             <div>
                 <label for="description">Description: </label>
                 <input type="text" name="description" id="description" value="<?= $id ? htmlentities($description) : "" ?>">
             </div>
+
+            <!-- Prix du bien -->
             <div>
                 <label for="prix">Prix: </label>
                 <input type="text" name="prix" id="prix" value="<?= $id ? htmlentities($prix) : "" ?>">€
             </div>
-
+            
+            <!-- Référencement -->
             <div>
-                <label for="ref">N° reference: </label>
+                <label for="ref">Référencement: </label>
                 <input type="text" name="ref" id="ref" value="<?= $id ? htmlentities($ref) : "" ?>">
             </div>
-
+            
+            <!-- Localisation -->
             <div>
                 <label for="local">Localisation: </label>
                 <input type="text" name="local" id="local" value="<?= $id ? htmlentities($local) : "" ?>">
             </div>
-
+            
+            <!-- Surface habitable -->
             <div>
                 <label for="surfhab">Surface habitable: </label>
                 <input type="text" name="surfhab" id="surfhab" value="<?= $id ? htmlentities($surf_hab) : "" ?>">m²
             </div>
-
+            
+            <!-- Surface totale -->
             <div>
                 <label for="surftot">Surface totale: </label>
                 <input type="text" name="surftot" id="surftot" value="<?= $id ? htmlentities($surf_tot) : "" ?>">m²
             </div>
-
+            
+            <!-- Diagnostic -->
             <div>
                 <label for="diagnostic">Diagnostic: </label>
                 <input type="text" name="diagnostic" id="diagnostic" value="<?= $id ? htmlentities($diagnostic) : "" ?>">
             </div>
-
+            
+            <!-- Type de bien via une liste déroulante -->
             <div>
                 <label for="typeBien">Type de bien</label>
                 <select name="typeBien" id="typeBien">
@@ -162,32 +191,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?php endforeach ?>
                 </select>
             </div>
-
+            
+            <!-- Options via un foreach (La fonctionalité post ne fonctionne pas avec) 
             <div>
                 <label for="options">Options: </label>
                 <?php foreach ($options as $option): ?>
                     <div>
-                        <input type="checkbox" id="<?= $option['opt_id'] ?>" name="<?= $option['opt_id'] ?>">
+                        <input type="checkbox" id="<?= $option['opt_id'] ?>" name="options[]" value="<?= $option['opt_id'] ?>">
                         <?= htmlentities($option['opt_libelle']) ?>
                         </input>
                     </div>
                 <?php endforeach; ?>
             </div>
+            -->
 
         </div>
+        <!-- Boutton pour mettre à jour ou créer selon si l'id existant est dans l'URL-->
         <button type="submit" class="btn btn-warning"><?= $id ? "Mettre à jour" : "Créer" ?></button>
         <a href="index.php" class="btn btn-info">Retour</a>
     </form>
 </div>
 
 <?php
-if ($id_annonce !== null) {
+// Si l'annonce existe on met à jour la date de modification de l'annonce associée à l'id
+if ($id_annonce) {
     $stmt = $pdo->prepare("UPDATE waz_annonces SET an_d_modif = NOW() WHERE an_id = ?");
     $stmt->execute([$annonce['an_id']]);
 }
 
-// TODO : ajouter une date modification via NOW() si première modification, update la date si deuxième ou +, date ajout si nouveau.
-// 
-// $pdo->exec($sqlModif);
 include("footer.php");
 ?>

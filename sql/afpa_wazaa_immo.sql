@@ -5,7 +5,7 @@ DROP DATABASE IF EXISTS afpa_wazaa_immo;
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : jeu. 13 fév. 2025 à 15:03
+-- Généré le : ven. 14 fév. 2025 à 12:03
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -54,16 +54,15 @@ CREATE TABLE IF NOT EXISTS `waz_annonces` (
   KEY `tb_id` (`tb_id`),
   KEY `u_id` (`u_id`),
   KEY `to_id` (`to_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `waz_annonces`
 --
 
 INSERT INTO `waz_annonces` (`an_id`, `an_pieces`, `an_titre`, `an_ref`, `an_description`, `an_local`, `an_surf_hab`, `an_surf_tot`, `an_prix`, `an_diagnostic`, `an_d_ajout`, `an_d_modif`, `an_statut`, `an_vues`, `tb_id`, `u_id`, `to_id`) VALUES
-(1, 5, '100 km de Paris, maison 85m2 avec jardin', '20A100', 'Exclusivité : dans bourg tous commerces avec écoles, maison d\'environ 85m2 habitables, mitoyenne, offrant en rez-de-chaussée, une cuisine aménagée, un salon-séjour, un WC et une loggia et à l\'étage, 3 chambres dont 2 avec placard, salle de bains et WC séparé. 2 garages. Le tout sur une parcelle de 225m2. Chauffage individuel clim réversible, DPE : F. ', 'Somme (80), 1h00 de Paris', 85, 225, '197000', 'F', '2020-11-13', '2025-02-13 14:59:11', 1, 17, 1, 1, 1),
-(4, 5, '10 km de Paris, maison 85m2 avec jardin', '20A100', 'test', 'omme (80), 1h00 de Paris', 85, 225, '12.00', 'A', '2025-02-13', NULL, 0, 5, 2, 1, 1),
-(5, 5, '10 km de Paris, maison 85m2 avec jardin', '20A100', 'test', 'omme (80), 1h00 de Paris', 85, 225, '12.00', 'A', '2025-02-13', NULL, 1, 0, 1, 1, 1);
+(1, 5, '100 km de Paris, maison 85m2 avec jardin', '20A100', 'Exclusivité : dans bourg tous commerces avec écoles, maison d\'environ 85m2 habitables, mitoyenne, offrant en rez-de-chaussée, une cuisine aménagée, un salon-séjour, un WC et une loggia et à l\'étage, 3 chambres dont 2 avec placard, salle de bains et WC séparé. 2 garages. Le tout sur une parcelle de 225m2. Chauffage individuel clim réversible, DPE : F. ', 'Somme (80), 1h00 de Paris', 85, 225, '197000', 'F', '2020-11-13', '2025-02-14 11:38:05', 1, 0, 1, 1, 1),
+(2, 4, '100 km de Paris, maison 85m2 avec jardin', '98201B', 'test', 'Localisation', 84, 230, '150000', 'B', '2025-02-14', '2025-02-14 11:54:11', 0, 0, 2, 1, 2);
 
 -- --------------------------------------------------------
 
