@@ -1,17 +1,20 @@
 <?php
 include("header.php");
 
-// Requête SQL du référencement de l'annonce via son id
+// Requête préparé SQL du référencement de l'annonce via son id
 $id = isset($_GET['annonce']) ? $_GET['annonce'] : '';
-$sql = "SELECT an_ref FROM waz_annonces WHERE an_id = '$id'";
-$annonce = $pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
+$stmt = $pdo->prepare("SELECT an_ref FROM waz_annonces WHERE an_id = ?");
+$stmt->execute([$id]);
+$annonce = $stmt->fetch(PDO::FETCH_ASSOC);
 
+// Si aucune annonce n'est trouvé, redirection vers index
 if (!$annonce) {
     header("Location: index.php");
 }
 
 ?>
 
+<!-- Formulaire de contact -->
 <form>
     <div class="form-group">
 

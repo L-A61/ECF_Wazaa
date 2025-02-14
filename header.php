@@ -47,9 +47,8 @@
         $user_id = $_SESSION['u_id'];
 
         // Récupération des informations de l'utilisateur
-        $sql = "SELECT * FROM waz_utilisateur WHERE u_ID=:u_id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['u_id' => $user_id]);
+        $stmt = $pdo->prepare("SELECT * FROM waz_utilisateur WHERE u_ID = ?");
+        $stmt->execute([$user_id]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {

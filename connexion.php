@@ -13,13 +13,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
+    // Requête préparé des informations de l'utilisateur selon son email
     $stmt = $pdo->prepare("SELECT * FROM waz_utilisateur WHERE u_email = ?");
     $stmt->execute([$email]);
     $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Si l'utilisateur et le mot de passe correspond avec les informations trouvés dans la base de donnée, connexion établit.
     if ($utilisateur && password_verify($password, $utilisateur['u_password'])) {
         $_SESSION['u_id'] = $utilisateur['u_id'];
 
+        // Récupération du type utilisateur
         $stmt = $pdo->prepare("SELECT * FROM waz_type_utilisateur WHERE tu_id = ?");
         $stmt->execute([$utilisateur['tu_id']]);
         $utilisateurType = $stmt->fetch(PDO::FETCH_ASSOC);

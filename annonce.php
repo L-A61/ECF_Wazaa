@@ -2,16 +2,20 @@
 include("header.php");
 
 $id = isset($_GET['info']) ? $_GET['info'] : '';
-$sql = "SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id 
+$stmt = $pdo->prepare("SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id 
 JOIN waz_type_offre o ON a.to_id = o.to_id
-WHERE an_id = '$id'";
-$annonce = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+WHERE an_id = ?");
+$stmt->execute([$id]);
+$annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$sqlPhotos = "SELECT * FROM waz_photos WHERE an_id = '$id'";
-$photos = $pdo->query($sqlPhotos)->fetchAll(PDO::FETCH_ASSOC);
+$stmtPhotos = $pdo->prepare("SELECT * FROM waz_photos WHERE an_id = ?");
+$stmtPhotos->execute([$id]);
+$photos = $stmtPhotos->fetchAll(PDO::FETCH_ASSOC);
 
 $typeOffre = [];
-$typeOffre = $pdo->query("SELECT * FROM waz_type_offre")->fetchAll(PDO::FETCH_ASSOC);
+$stmtOffre = $pdo->prepare("SELECT * FROM waz_type_offre");
+$stmtOffre->execute();
+$typeOffre = $stmtOffre->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 <?php if(count($annonce) > 0):?>
