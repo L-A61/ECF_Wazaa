@@ -1,7 +1,7 @@
 <?php
 include("header.php");
 
-// Récupération dans l'url de l'id de l'annonce
+// Récupération dans l'url de l'id de l'annonce et requête préparé SQL
 $id = isset($_GET['info']) ? $_GET['info'] : '';
 $stmt = $pdo->prepare("SELECT * FROM waz_annonces a JOIN waz_type_bien tb ON a.tb_id = tb.tb_id 
 JOIN waz_type_offre o ON a.to_id = o.to_id
