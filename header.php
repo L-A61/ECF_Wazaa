@@ -19,6 +19,7 @@
 
     <?php
 
+    // Commence une session si aucun n'est détecté
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -40,7 +41,7 @@
     ?>
     <?php
 
-    // Vérifiez si l'utilisateur est connecté
+    // Vérifiez si l'utilisateur est connecté, null par défaut
     $username = null;
     if (isset($_SESSION['u_id'])) {
         $user_id = $_SESSION['u_id'];
@@ -62,6 +63,7 @@
 
     ?>
 
+<!-- Navbar bootstrap avec menu hamburger contenant le logo, page de connexion/déconnexion et la page à propos -->
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
   <a href="index.php"><img src="assets/wazaa_logo.png" alt=""></a>

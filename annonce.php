@@ -36,7 +36,7 @@ $typeOffre = $pdo->query("SELECT * FROM waz_type_offre")->fetchAll(PDO::FETCH_AS
     <p>Diagnostic: <?= htmlentities($annonceValue['an_diagnostic']) ?></p>
     <p>Vue: <?= htmlentities($annonceValue['an_vues']) ?></p>
     <a href="index.php" class="btn btn-info">Retour</a>
-    <a href="contact.php" class="btn btn-success">Contacter</a>
+    <a href="contact.php?annonce=<?= htmlentities($annonceValue['an_id'])?>" class="btn btn-success">Contacter</a>
 <?php endforeach; ?>
 <?php else:?>
     <p>Annonce introuvable</p>

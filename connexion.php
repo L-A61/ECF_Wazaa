@@ -2,11 +2,13 @@
 
 include("header.php");
 
+// Si l'utilisateur est déjà connecté, redirection vers index.php
 if (isset($_SESSION['u_id'])) {
     header("Location: index.php");
     exit();
 }
 
+// Récupération de la méthode post du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
